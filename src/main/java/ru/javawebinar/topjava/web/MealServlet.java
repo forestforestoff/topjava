@@ -31,9 +31,9 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
-
         Meal meal = new Meal(id.equals("") ? null : Integer.valueOf(id), LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"), Integer.parseInt(request.getParameter("calories")));
+        log.info(meal.getId() == null ? "Add" : "Update {}", id);
         mealStorage.save(meal);
         response.sendRedirect("meals");
     }
@@ -43,6 +43,7 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
+            log.info("GetAll");
             request.setAttribute("mealList", MealsUtil.getFilteredWithExcess(mealStorage.getAll(), LocalTime.MIN, LocalTime.MAX, 2000));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
@@ -51,6 +52,7 @@ public class MealServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 int id = getId(request);
+                log.info("Delete {}", id);
                 mealStorage.delete(id);
                 response.sendRedirect("meals");
                 break;

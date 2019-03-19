@@ -22,18 +22,11 @@ public class MealStorage implements Storage {
     }
 
     @Override
-    public void update(Meal meal) {
-        if (meal.getId() != null) {
-            mealMap.replace(meal.getId(), meal);
-        }
-    }
-
-    @Override
-    public void save(Meal meal) {
+    public Meal save(Meal meal) {
         if (meal.getId() == null) {
             meal.setId(counter.incrementAndGet());
         }
-        mealMap.put(meal.getId(), meal);
+        return mealMap.put(meal.getId(), meal);
     }
 
     @Override
