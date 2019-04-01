@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +14,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
+import static ru.javawebinar.topjava.web.SecurityUtil.*;
 
 @Controller
 public class MealRestController {
@@ -30,31 +28,33 @@ public class MealRestController {
     }
 
     public List<MealTo> getAll() {
-        return MealsUtil.getWithExcess(service.getAll(authUserId()), authUserCaloriesPerDay());
+        return MealsUtil.getWithExcess(service.getAll(getAuthUserId()), authUserCaloriesPerDay());
     }
 
     public List<MealTo> getSeparatelyFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
-        return MealsUtil.getWithExcess(service
-                .getDTFiltered(LocalDateTime.of(fixedStartDate(startDate), fixedStartTime(startTime)), LocalDateTime.of(fixedEndDate(endDate), fixedEndTime(endTime)),
-                        authUserId()), authUserCaloriesPerDay());
+        List<Meal> meals = service.getDTFiltered(
+                LocalDateTime.of(fixedStartDate(startDate), LocalTime.MIN),
+                LocalDateTime.of(fixedEndDate(endDate), LocalTime.MAX),
+                getAuthUserId());
+        return MealsUtil.getFilteredWithExcess(meals, authUserCaloriesPerDay(), fixedStartTime(startTime), fixedEndTime(endTime));
     }
 
     public Meal get(int id) {
-        return service.get(id, authUserId());
+        return service.get(id, getAuthUserId());
     }
 
     public void delete(int id) {
-        service.delete(id, authUserId());
+        service.delete(id, getAuthUserId());
     }
 
     public Meal create(Meal meal) {
         checkNew(meal);
-        return service.create(meal, authUserId());
+        return service.create(meal, getAuthUserId());
     }
 
     public void update(Meal meal, int id) {
         assureIdConsistent(meal, id);
-        service.update(meal, authUserId());
+        service.update(meal, getAuthUserId());
     }
 
     private LocalTime fixedStartTime(LocalTime time) {
