@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MealService {
@@ -13,7 +13,7 @@ public interface MealService {
 
     Meal get(int id, int userId) throws NotFoundException;
 
-    List<Meal> getDTFiltered(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
+    List<Meal> getDtFiltered(LocalDate startDate, LocalDate endDate, int userId);
 
     void update(Meal meal, int userId) throws NotFoundException;
 

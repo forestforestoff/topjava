@@ -8,19 +8,17 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
-import static ru.javawebinar.topjava.web.SecurityUtil.*;
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
+import static ru.javawebinar.topjava.web.SecurityUtil.getAuthUserId;
 
 @Controller
 public class MealRestController {
     private final MealService service;
-    private static final LocalDate MIN_DATE = LocalDate.of(1900, 1, 1);
-    private static final LocalDate MAX_DATE = LocalDate.of(3000, 1, 1);
 
     @Autowired
     public MealRestController(MealService service) {
@@ -32,9 +30,9 @@ public class MealRestController {
     }
 
     public List<MealTo> getSeparatelyFiltered(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
-        List<Meal> meals = service.getDTFiltered(
-                LocalDateTime.of(fixedStartDate(startDate), LocalTime.MIN),
-                LocalDateTime.of(fixedEndDate(endDate), LocalTime.MAX),
+        List<Meal> meals = service.getDtFiltered(
+                fixedStartDate(startDate),
+                fixedEndDate(endDate),
                 getAuthUserId());
         return MealsUtil.getFilteredWithExcess(meals, authUserCaloriesPerDay(), fixedStartTime(startTime), fixedEndTime(endTime));
     }
@@ -66,10 +64,10 @@ public class MealRestController {
     }
 
     private LocalDate fixedStartDate(LocalDate date) {
-        return date == null ? MIN_DATE : date;
+        return date == null ? LocalDate.MIN : date;
     }
 
     private LocalDate fixedEndDate(LocalDate date) {
-        return date == null ? MAX_DATE : date;
+        return date == null ? LocalDate.MAX : date;
     }
 }

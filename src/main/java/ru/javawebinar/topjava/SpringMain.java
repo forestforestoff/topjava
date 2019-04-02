@@ -35,7 +35,7 @@ public class SpringMain {
             System.out.println("***getall***");
             mealRestController.getAll().forEach(System.out::println);
             System.out.println("***delete meal with id=7***");
-            mealRestController.delete(7);
+            mealRestController.delete(6);
             System.out.println("***getall***");
             mealRestController.getAll().forEach(System.out::println);
         }
