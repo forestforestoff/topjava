@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
@@ -29,13 +28,13 @@ public class SpringMain {
             mealRestController.create(new Meal(LocalDateTime.of(2015, Month.MAY, 30, 16, 0), "Чипсики", 700));
             System.out.println("***output from 30.05.2015 15:00 to 31.05.2015 17:00***");
             List<MealTo> mealTos = mealRestController.getSeparatelyFiltered(
-                    LocalDate.of(2015, Month.MAY, 30), LocalTime.of(15, 0),
-                    LocalDate.of(2015, Month.MAY, 31), LocalTime.of(17, 0));
+                    null, null,
+                    null, LocalTime.of(17, 0));
             mealTos.forEach(System.out::println);
             System.out.println("***getall***");
             mealRestController.getAll().forEach(System.out::println);
             System.out.println("***delete meal with id=7***");
-            mealRestController.delete(6);
+            mealRestController.delete(7);
             System.out.println("***getall***");
             mealRestController.getAll().forEach(System.out::println);
         }
