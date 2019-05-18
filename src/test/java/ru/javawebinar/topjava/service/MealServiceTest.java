@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Stopwatch;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -18,6 +19,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -32,7 +34,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static Logger log = Logger.getLogger(MealServiceTest.class.getName());
+    private static final Logger log = Logger.getLogger(MealServiceTest.class.getName());
 
     private static StringBuilder allTestTime = new StringBuilder();
 
@@ -40,29 +42,27 @@ public class MealServiceTest {
         SLF4JBridgeHandler.install();
     }
 
+    private static void logInfo(Description description, long nanos) {
+        String testTime = description.getMethodName() + " " + TimeUnit.NANOSECONDS.toMicros(nanos);
+        allTestTime.append(testTime).append('\n');
+        log.info("Test " + testTime + " microseconds");
+    }
+
     @Rule
-    public TestWatcher watcher = new TestWatcher() {
-
-        private long start;
-        private long end;
+    public Stopwatch stopwatch = new Stopwatch() {
 
         @Override
-        protected void starting(Description description) {
-            start = System.currentTimeMillis();
-        }
-
-        @Override
-        protected void finished(Description description) {
-            end = System.currentTimeMillis();
-            String time = description.getMethodName() + " duration: " + (end - start) + " ms";
-            allTestTime.append("> ").append(time).append(" < ");
-            log.info(time);
+        protected void finished(long nanos, Description description) {
+            logInfo(description, nanos);
         }
     };
 
     @AfterClass
     public static void printTestsTime() {
-        log.info(allTestTime.toString());
+        log.info("\nTest     Duration, ms" +
+                "\n---------------------\n" +
+                allTestTime +
+                "---------------------");
     }
 
     @Rule
