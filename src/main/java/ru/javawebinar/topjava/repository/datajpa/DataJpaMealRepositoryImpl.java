@@ -8,7 +8,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class DataJpaMealRepositoryImpl implements MealRepository {
@@ -41,13 +40,21 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return crudMealRepository.findAll(SORT_DATETIME).stream()
-                .filter(meal -> meal.getUser().getId() == userId)
-                .collect(Collectors.toList());
+        return crudMealRepository.getAll(userId);
     }
 
     @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return crudMealRepository.getBetween(startDate, endDate, userId);
+    }
+
+    @Override
+    public Meal getWithUser(int id, int userId) {
+        Meal meal = get(id, userId);
+        if (meal == null) {
+            return null;
+        }
+        meal.setUser(crudUserRepository.findById(userId).get());
+        return meal;
     }
 }
