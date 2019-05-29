@@ -11,7 +11,7 @@ import static ru.javawebinar.topjava.Profiles.POSTGRES_DB;
 
 @Repository
 @Profile(POSTGRES_DB)
-public class PostgresJdbcMealRepositoryImpl extends AbstractJdbcMealRepository {
+public class PostgresJdbcMealRepositoryImpl extends AbstractJdbcMealRepository<LocalDateTime> {
     public PostgresJdbcMealRepositoryImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
